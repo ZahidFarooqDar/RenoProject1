@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\Users\acs\OneDrive\Desktop\Publish</_PublishTargetUrl>
+    <History>True|2023-08-29T07:44:45.3461748Z;True|2023-08-29T13:10:55.9684388+05:30;</History>
+    <LastFailureDetails />
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+  </PropertyGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="ProjectHeroContext">
+      <Value>Server=%28localdb%29\mssqllocaldb%3bDatabase=HeroDB%3bTrusted_Connection=True%3bMultipleActiveResultSets=true</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
+</Project>
