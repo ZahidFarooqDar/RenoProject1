@@ -17,12 +17,16 @@ namespace ProjectHero.Repository
     public class AccountRepository : IAccountRepository
     {
         private readonly UserManager<HeroUser> _userManager;
-        private readonly SignInManager<HeroUser> _signInManager;  //For SignIn Purpose
+        /*
+          The SignInManager class in ASP.NET Identity is a fundamental component for managing user sign-in operations in an ASP.NET Core application. 
+          It provides a convenient and secure way to handle user authentication and related tasks. 
+        */
+        private readonly SignInManager<HeroUser> _signInManager;
         private readonly IConfiguration _configuration;  //For reading settings from appsetting.json
 
         /* Constructor typically in other repository we used DbContext here
-Here we are using UserManager-> To deal with user (CRUD) we use managers provided by IdentityCore
-HeroUser is actually our Model controlled by Identity Core */
+           Here we are using UserManager-> To deal with user (CRUD) we use managers provided by IdentityCore
+           HeroUser is actually our Model controlled by Identity Core */
 
         public AccountRepository(UserManager<HeroUser> userManager, SignInManager<HeroUser> signInManager , IConfiguration configuration) 
         {
@@ -63,7 +67,7 @@ HeroUser is actually our Model controlled by Identity Core */
         }
         public async Task<string> LoginAsync (SignInModel signInModel)
         {
-            var result = await _signInManager.PasswordSignInAsync(signInModel.Email, signInModel.Password, false, false);
+            var result = await _signInManager.PasswordSignInAsync(signInModel.Email, signInModel.Password, false, false); //Token
             /*3rd parameter is actually isPersistent => whether u want automatic login or not means if login once, can be login in automatically another time
               4th parameter is lockOutFailure => Means if we want to lock the account after some wrong attempts.
               The third parameter, false, means that you don't want to enable automatic login (persistent cookie).
@@ -92,7 +96,8 @@ HeroUser is actually our Model controlled by Identity Core */
                 audience: _configuration["JWT:ValidAudience"],
                 expires: DateTime.Now.AddDays(1),   //Setting validity for Particular Token
                 claims: authclaims,
-                signingCredentials: new SigningCredentials(authSigninKey, SecurityAlgorithms.HmacSha256Signature)  //This specifies the key and the signing algorithm (HMACSHA256) used to sign the token.
+                signingCredentials: new SigningCredentials(authSigninKey, SecurityAlgorithms.HmacSha256Signature)  
+                //This specifies the key and the signing algorithm (HMACSHA256) used to sign the token.
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

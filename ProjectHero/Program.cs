@@ -1,12 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using ProjectHero.Data;
 using ProjectHero.DomainModal;
 using ProjectHero.Repository;
+using System;
 using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
+using static System.Net.WebRequestMethods;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
@@ -72,31 +77,81 @@ builder.Services.AddIdentity<HeroUser, IdentityRole>() //The parameters here are
 // Add services to the container.
 builder.Services.AddAuthentication(options =>
 {
+    // Set the default authentication scheme to JwtBearer
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(option =>
 {
+    // Indicate that the token should be saved in the authentication properties
     option.SaveToken = true;
+
+    // Disable HTTPS metadata validation (only for development, not recommended in production)
+/*    RequireHttpsMetadata is set to false, indicating that HTTPS metadata validation is disabled.
+      This is typically done for development purposes and should be enabled in a production environment.*/
     option.RequireHttpsMetadata = false;
+
+    // Configure token validation parameters
     option.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
     {
+        // Validate the issuer (typically the server that created the token)
         ValidateIssuer = true,
-        ValidateAudience = true,  // This line is duplicated, you can remove one of them
+
+        // Validate the audience (typically the intended recipient of the token)
+        ValidateAudience = true, // This line is duplicated, you can remove one of them
+
+        // Define the valid issuer and audience from configuration
         ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
         ValidAudience = builder.Configuration["JWT:ValidAudience"],
+
+        // Set the issuer signing key used to validate the token's signature
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"])),
+
+        // Validate the token's lifetime (expiration date)
         ValidateLifetime = true, // Uncomment if you want to validate token lifetime
+
+        // Validate the issuer signing key
         ValidateIssuerSigningKey = true // Uncomment if you want to validate the issuer signing key
     };
 });
 
 
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(
+    c =>
+    {
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+
+        // Define a security scheme for bearer tokens
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer"
+        });
+
+        // Assign the security requirements to the operations
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
+    });
+    });
 builder.Services.AddAutoMapper(typeof(Program));
 
 //CORS 
