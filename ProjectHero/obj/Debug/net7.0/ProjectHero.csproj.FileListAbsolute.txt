@@ -260,3 +260,4 @@ C:\Users\acs\OneDrive\Desktop\ASPNET\ProjectHero\bin\Debug\net7.0\Microsoft.AspN
 C:\Users\acs\OneDrive\Desktop\ASPNET\ProjectHero\bin\Debug\net7.0\Microsoft.Extensions.Identity.Core.dll
 C:\Users\acs\OneDrive\Desktop\ASPNET\ProjectHero\bin\Debug\net7.0\Microsoft.Extensions.Identity.Stores.dll
 C:\Users\acs\OneDrive\Desktop\ASPNET\ProjectHero\bin\Debug\net7.0\Microsoft.Extensions.Options.dll
+C:\Users\acs\OneDrive\Desktop\ASPNET\ProjectHero\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

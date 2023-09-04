@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.IdentityModel.Tokens;
 using ProjectHero.Data;
 using ProjectHero.DomainModal;
 using ProjectHero.Repository;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
@@ -67,6 +70,28 @@ builder.Services.AddIdentity<HeroUser, IdentityRole>() //The parameters here are
     .AddDefaultTokenProviders(); //This will provide necessary tokens as well and It is default one as we did not make our own.
 
 // Add services to the container.
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(option =>
+{
+    option.SaveToken = true;
+    option.RequireHttpsMetadata = false;
+    option.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,  // This line is duplicated, you can remove one of them
+        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"])),
+        ValidateLifetime = true, // Uncomment if you want to validate token lifetime
+        ValidateIssuerSigningKey = true // Uncomment if you want to validate the issuer signing key
+    };
+});
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -91,7 +116,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseCors("corspolicy");
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

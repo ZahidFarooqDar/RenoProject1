@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProjectHero.Repository;
 using ProjectHero.ServiceModals;
 
@@ -6,6 +7,7 @@ namespace ProjectHero.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class HeroesController : ControllerBase
     {
         private readonly IHeroRepository _heroRepository;
