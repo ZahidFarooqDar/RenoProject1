@@ -1,17 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.VisualBasic;
 using ProjectHero.Data;
 using ProjectHero.DomainModal;
 using ProjectHero.Repository;
-using System;
 using System.Text;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
-using static System.Net.WebRequestMethods;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
@@ -99,7 +96,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = true,
 
         // Validate the audience (typically the intended recipient of the token)
-        ValidateAudience = true, // This line is duplicated, you can remove one of them
+        ValidateAudience = true, 
 
         // Define the valid issuer and audience from configuration
         ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
@@ -122,12 +119,32 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(
-    c =>
+    options =>
     {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+        /*
+         * We were having problem that we were unable to send BearerToken in swagger, for enabling that we use this functionality
+         */
+        // options.SwaggerDoc("v1", new OpenApiInfo { Title = "Project Hero", Version = "DEMO" });
+    options.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Version = "Demo",
+            Title = "Project HERO",
+            Description = "An ASP.NET Core Web API 6.0 for managing CRUD and Validation On HERO API",
+            //TermsOfService = new Uri("https://example.com/terms"),
+            Contact = new OpenApiContact
+            {
+                Name = "Developer's LinkedIn Contact",
+                Url = new Uri("https://www.linkedin.com/in/zahid-farooq-dar/")
+            },
+            License = new OpenApiLicense
+            {
+                Name = "Projet's Github Link",
+                Url = new Uri("https://github.com/ZahidFarooqDar/RenoProject1/tree/main/ProjectHero")
+            }
+        });
 
         // Define a security scheme for bearer tokens
-        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
             Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
             Name = "Authorization",
@@ -137,7 +154,7 @@ builder.Services.AddSwaggerGen(
         });
 
         // Assign the security requirements to the operations
-        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
             new OpenApiSecurityScheme

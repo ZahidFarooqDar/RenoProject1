@@ -7,7 +7,11 @@ namespace ProjectHero.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    /*Using This provide us Authorization at Controller level means all the methods in the respective controller needs authorization to work,
+     * [Authorize] can be used at method level as well, In that condition authorization will be needed for only those methods
+*/
+    [Authorize]  
+
     public class HeroesController : ControllerBase
     {
         private readonly IHeroRepository _heroRepository;
@@ -75,6 +79,11 @@ namespace ProjectHero.Controllers
                 return NotFound("Hero not found or update failed");
             }
         }
+        /// <summary>
+        /// Deletes a Specific Hero based on ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete]
         public IActionResult DeleteHero([FromQuery] int id)
         {
