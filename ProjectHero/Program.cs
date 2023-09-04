@@ -127,6 +127,7 @@ builder.Services.AddSwaggerGen(
         // options.SwaggerDoc("v1", new OpenApiInfo { Title = "Project Hero", Version = "DEMO" });
     options.SwaggerDoc("v1", new OpenApiInfo
         {
+          //This configure the swagger with below used Titles and helps us to locate Developer and Github Repository
             Version = "Demo",
             Title = "Project HERO",
             Description = "An ASP.NET Core Web API 6.0 for managing CRUD and Validation On HERO API",
